@@ -640,6 +640,225 @@
   }
   requestAnimationFrame(drawWeave);
 
+  /* ---------------- shop the look (hotspots) ---------------- */
+  const cropAt = (c, z) => Math.max(0, Math.min(100, ((c / 100 - 0.5 / z) / (1 - 1 / z)) * 100)).toFixed(1); // centre the crop on point c
+  const cropBg = (id, x, y, z = 3) => `background-image:url('${U(id, 1400)}');background-size:${z * 100}%;background-position:${cropAt(x, z)}% ${cropAt(y, z)}%`;
+  const cutBg = (f) => `background-image:url('img/rail/${f}.webp')`;
+  const STL = [
+    { name: "Plum & Gold", kicker: "Look 01 · Evening", photo: P.navyRed, alt: "A woman in a plum silk saree with a wide gold zari border",
+      desc: "Plum silk with a wide gold zari pallu, worn with a plain black blouse so the zari does the talking.",
+      items: [
+        { n: "Plum Kanchi saree", p: 26400, x: 46, y: 62, z: 3 },
+        { n: "Black velvet blouse", p: 3400, x: 37, y: 36, z: 5 },
+        { n: "Gold temple jhumkas", p: 5800, x: 46, y: 27, z: 6 } ] },
+    { name: "Temple Morning", kicker: "Look 02 · Festival", photo: P.orange, alt: "A woman in a saffron silk saree with gold jewellery",
+      desc: "Saffron silk for a temple morning. A gold haram and a stack of bangles finish it.",
+      items: [
+        { n: "Saffron Kanchi saree", p: 22800, x: 60, y: 70, z: 3 },
+        { n: "Lakshmi gold haram", p: 9200, x: 47, y: 33, z: 5 },
+        { n: "Gold bangle set (6)", p: 4600, x: 37, y: 52, z: 6 } ] },
+    { name: "Ivory & Red", kicker: "Look 03 · Wedding guest", photo: P.whiteRed, alt: "A woman in an ivory silk saree with red bangles",
+      desc: "Ivory body, red border. Red glass bangles and small jhumkas keep it light for a day wedding.",
+      items: [
+        { n: "Ivory Kanchi saree", p: 24800, x: 27, y: 72, z: 3 },
+        { n: "Red glass bangles", p: 1200, x: 37, y: 38, z: 6 },
+        { n: "Ruby drop jhumkas", p: 4900, x: 42, y: 26, z: 6 } ] },
+  ];
+  const stlStage = $("#stlStage"), stlPanel = $("#stlPanel");
+  let stlI = 0, stlHs = -1;
+  stlStage.innerHTML = STL.map((L, li) => `<div class="stl__slide${li ? "" : " is-on"}" data-l="${li}" ${li ? "aria-hidden=\"true\"" : ""}>
+      <img src="${U(L.photo, 1100)}" alt="${L.alt}" loading="lazy">
+      ${L.items.map((it, k) => `<button class="hs" style="--x:${it.x}%;--y:${it.y}%" data-k="${k}" aria-label="${it.n}, ${inr(it.p)}"${li ? " tabindex=\"-1\"" : ""}><i></i></button>`).join("")}
+      <div class="hs__card" role="status"></div>
+    </div>`).join("") + `<div class="stl__nav"><button data-d="-1" aria-label="Previous look"><svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg></button>
+      <div class="stl__dots">${STL.map((_, i) => `<i class="${i ? "" : "is-on"}"></i>`).join("")}</div>
+      <button data-d="1" aria-label="Next look"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></button></div>`;
+  function stlRenderPanel() {
+    const L = STL[stlI], total = L.items.reduce((s, it) => s + it.p, 0);
+    stlPanel.innerHTML = `<p class="stl__kicker">${L.kicker}</p><h3 class="stl__title">${L.name}</h3><p class="stl__desc">${L.desc}</p>
+      <ul class="stl__items">${L.items.map((it, k) => `<li class="stl__item" data-k="${k}"><span class="th" style="${cropBg(L.photo, it.x, it.y, it.z)}"></span>
+        <div><b>${it.n}</b><span>${inr(it.p)}</span></div><button data-add="${k}">Add</button></li>`).join("")}</ul>
+      <div class="stl__all"><button class="pill pill--red" data-add="all">Add the look</button><b>${inr(total)}</b></div>`;
+  }
+  function stlShow(k) {
+    const slide = stlStage.children[stlI], card = $(".hs__card", slide);
+    stlHs = k;
+    $$(".hs", slide).forEach((h) => h.classList.toggle("is-on", +h.dataset.k === k));
+    $$(".stl__item", stlPanel).forEach((r) => r.classList.toggle("is-on", +r.dataset.k === k));
+    if (k < 0) { card.classList.remove("is-on"); return; }
+    const L = STL[stlI], it = L.items[k];
+    card.innerHTML = `<span class="th" style="${cropBg(L.photo, it.x, it.y, it.z)}"></span><b>${it.n}</b><span>${inr(it.p)}</span><button data-add="${k}">Quick add</button>`;
+    // beside the dot, flipped and clamped so it never leaves the photo (phones included)
+    const sw = slide.clientWidth, sh = slide.clientHeight, cw = card.offsetWidth, ch = card.offsetHeight;
+    const px = (it.x / 100) * sw, py = (it.y / 100) * sh;
+    let left = px + 26 + cw > sw - 10 ? px - 26 - cw : px + 26;
+    left = Math.max(10, Math.min(sw - cw - 10, left));
+    let top = Math.max(10, Math.min(sh - ch - 76, py - ch / 2));
+    if (left < px + 20 && left + cw > px - 20 && top < py + 20 && top + ch > py - 20) top = py + 26 + ch < sh - 76 ? py + 26 : py - 26 - ch; // don't cover the dot
+    card.style.left = left + "px"; card.style.top = top + "px";
+    card.classList.add("is-on");
+  }
+  function stlGo(i) {
+    stlShow(-1);
+    const old = stlStage.children[stlI];
+    old.classList.remove("is-on"); old.setAttribute("aria-hidden", "true"); $$(".hs", old).forEach((h) => (h.tabIndex = -1));
+    stlI = (i + STL.length) % STL.length;
+    const cur = stlStage.children[stlI];
+    cur.classList.add("is-on"); cur.removeAttribute("aria-hidden"); $$(".hs", cur).forEach((h) => (h.tabIndex = 0));
+    $$(".stl__dots i", stlStage).forEach((d, k) => d.classList.toggle("is-on", k === stlI));
+    stlRenderPanel();
+  }
+  function stlAdd(k) {
+    const L = STL[stlI];
+    if (k === "all") addToBag(L.items.length, `${L.name}: ${L.items.length} pieces added`);
+    else addToBag(1, `${L.items[+k].n} added`);
+  }
+  stlStage.addEventListener("pointerover", (e) => { const h = e.target.closest(".hs"); if (h && e.pointerType === "mouse") stlShow(+h.dataset.k); });
+  stlStage.addEventListener("click", (e) => {
+    const nav = e.target.closest("[data-d]"); if (nav) return stlGo(stlI + +nav.dataset.d);
+    const add = e.target.closest("[data-add]"); if (add) return stlAdd(add.dataset.add);
+    const h = e.target.closest(".hs"); if (h) return stlShow(stlHs === +h.dataset.k && e.pointerType !== "mouse" ? -1 : +h.dataset.k);
+    if (!e.target.closest(".hs__card")) stlShow(-1);
+  });
+  stlStage.addEventListener("focusin", (e) => { const h = e.target.closest(".hs"); if (h) stlShow(+h.dataset.k); });
+  stlStage.addEventListener("keydown", (e) => { if (e.key === "Escape") stlShow(-1); });
+  stlPanel.addEventListener("click", (e) => { const add = e.target.closest("[data-add]"); if (add) stlAdd(add.dataset.add); });
+  stlPanel.addEventListener("pointerover", (e) => { const r = e.target.closest(".stl__item"); if (r && e.pointerType === "mouse") stlShow(+r.dataset.k); });
+  stlRenderPanel();
+
+  /* ---------------- complete the look ---------------- */
+  const CTL = [
+    { id: "saree", n: "Kanchi silk saree", note: "6.2 m with running blouse piece", on: true, cut: true,
+      cols: [["Ivory", "#efe4cf", "kanchi-ivory", 24800], ["Temple red", "#b3122e", "kanchi-temple-red", 25600], ["Wine", "#6b1530", "kanchi-wine", 25200], ["Mango", "#f0a21a", "kanchi-mango", 24800]] },
+    { id: "blouse", n: "Red silk blouse, stitched", note: "Elbow sleeve, back hooks", on: true, p: 3200, bg: cropBg(P.cream, 64, 60, 6), sizes: ["34", "36", "38", "40"] },
+    { id: "jhumka", n: "Temple jhumkas", note: "Gold-plated silver, ruby stones", on: true, p: 6400, bg: cropBg(P.redJewel, 34, 44, 4) },
+    { id: "potli", n: "Zari potli bag", note: "Woven from our border offcuts", on: false, p: 1900, bg: cropBg(P.silkClose, 50, 50, 2) },
+  ];
+  const ctlSel = { col: 0, size: 1 };
+  $("#ctlImg").src = U(P.cream, 1100);
+  const ctlList = $("#ctlList"), ctlTotal = $("#ctlTotal"), ctlAddBtn = $("#ctlAdd");
+  const ctlPrice = (it) => (it.cols ? it.cols[ctlSel.col][3] : it.p);
+  ctlList.innerHTML = CTL.map((it) => `<li class="ctl__row${it.on ? "" : " is-off"}" data-id="${it.id}">
+      <input type="checkbox" id="ctl-${it.id}" ${it.on ? "checked" : ""}>
+      <span class="th${it.cut ? " th--cut" : ""}" style="${it.cut ? cutBg(it.cols[0][2]) : it.bg}"></span>
+      <div><label for="ctl-${it.id}"><b>${it.n}</b><small>${it.cols ? `<span class="ctl__cname">${it.cols[0][0]}</span> · ` : ""}${it.note}</small></label>
+        ${it.cols ? `<div class="ctl__opts" role="group" aria-label="Saree colour">${it.cols.map((c, k) => `<button class="ctl__sw" style="--c:${c[1]}" data-col="${k}" aria-label="${c[0]}" aria-pressed="${!k}"></button>`).join("")}</div>` : ""}
+        ${it.sizes ? `<div class="ctl__opts" role="group" aria-label="Blouse size">${it.sizes.map((s, k) => `<button class="ctl__size" data-size="${k}" aria-pressed="${k === ctlSel.size}">${s}</button>`).join("")}</div>` : ""}
+      </div>
+      <span class="ctl__price">${inr(ctlPrice(it))}</span></li>`).join("");
+  function ctlUpdate() {
+    const picked = CTL.filter((it) => it.on);
+    ctlTotal.textContent = inr(picked.reduce((s, it) => s + ctlPrice(it), 0));
+    ctlAddBtn.textContent = picked.length ? `Add ${picked.length} piece${picked.length > 1 ? "s" : ""} to bag` : "Pick a piece";
+    ctlAddBtn.disabled = !picked.length;
+  }
+  ctlList.addEventListener("change", (e) => {
+    const row = e.target.closest(".ctl__row"), it = CTL.find((x) => x.id === row.dataset.id);
+    it.on = e.target.checked; row.classList.toggle("is-off", !it.on); ctlUpdate();
+  });
+  ctlList.addEventListener("click", (e) => {
+    const sw = e.target.closest("[data-col]"), sz = e.target.closest("[data-size]");
+    if (sw) {
+      ctlSel.col = +sw.dataset.col; const it = CTL[0], c = it.cols[ctlSel.col], row = sw.closest(".ctl__row");
+      $$("[data-col]", row).forEach((b) => b.setAttribute("aria-pressed", b === sw));
+      $(".th", row).style.backgroundImage = `url('img/rail/${c[2]}.webp')`;
+      $(".ctl__cname", row).textContent = c[0];
+      $(".ctl__price", row).textContent = inr(c[3]);
+      if (!it.on) { it.on = true; $("input", row).checked = true; row.classList.remove("is-off"); }
+      ctlUpdate();
+    } else if (sz) {
+      ctlSel.size = +sz.dataset.size;
+      $$("[data-size]", ctlList).forEach((b) => b.setAttribute("aria-pressed", b === sz));
+    }
+  });
+  ctlAddBtn.addEventListener("click", () => {
+    const picked = CTL.filter((it) => it.on); if (!picked.length) return;
+    const parts = picked.map((it) => it.id === "saree" ? `${it.cols[ctlSel.col][0]} saree` : it.id === "blouse" ? `blouse (${it.sizes[ctlSel.size]})` : it.n.toLowerCase());
+    addToBag(picked.length, `Added: ${parts.join(", ")}`);
+  });
+  ctlUpdate();
+
+  /* ---------------- the making (sticky steps) ---------------- */
+  const MAKING = [
+    { t: "Silk and zari", src: U(P.silkClose, 1200), alt: "Close-up of magenta silk with a gold zari border",
+      d: "Mulberry silk from Karnataka is dyed in small vats in Kanchipuram. The zari is silver thread twisted with gold, bought by weight and tested before it reaches the loom.", m: ["Mulberry silk", "Silver-gold zari"] },
+    { t: "The korvai weave", src: "img/rail/kanchi-temple-red.webp", cut: true, alt: "A temple-red Kanchi saree with a contrast border",
+      d: "Body and border are woven as separate pieces and interlocked by hand, so the border can be a different colour and never frays apart. Two weavers, one loom, about three weeks.", m: ["2 weavers", "~21 days"] },
+    { t: "Every fold checked", src: U(P.hangers, 1200), alt: "Silk sarees hanging in a row",
+      d: "Each saree is opened out on a light table. We look for skipped threads, check the zari with a flame test on the offcut and weigh it against the Silk Mark spec.", m: ["Silk Mark tag", "Zari test"] },
+    { t: "At our shop on Gandhi Road", src: U(P.store, 1200), alt: "Inside a silk saree shop",
+      d: "Then it is folded in muslin and comes to the counter, where you can drape it before you buy. Online orders ship in the same muslin with the weaver's card.", m: ["Free draping", "Ships in 2 days"] },
+  ];
+  const mkMedia = $("#makingMedia"), mkSteps = $("#makingSteps"), mkCount = $("#makingCount");
+  mkMedia.insertAdjacentHTML("afterbegin", MAKING.map((s, i) => `<img src="${s.src}" alt="${s.alt}" class="${s.cut ? "is-cut " : ""}${i ? "" : "is-on"}" loading="lazy">`).join(""));
+  mkSteps.innerHTML = MAKING.map((s, i) => `<li class="making__step${i ? "" : " is-on"}" data-i="${i}">
+      <img src="${s.src}" alt="" class="${s.cut ? "is-cut" : ""}" loading="lazy">
+      <span class="making__no">STEP 0${i + 1}</span><h3>${s.t}</h3><p>${s.d}</p>
+      <div class="meta">${s.m.map((x) => `<span>${x}</span>`).join("")}</div></li>`).join("");
+  const mkImgs = $$("img", mkMedia), mkLis = $$(".making__step", mkSteps);
+  function mkSet(i) {
+    mkImgs.forEach((im, k) => im.classList.toggle("is-on", k === i));
+    mkLis.forEach((li, k) => li.classList.toggle("is-on", k === i));
+    mkCount.textContent = `0${i + 1} / 0${MAKING.length}`;
+  }
+  let mkI = 0;
+  function mkScroll() { // the step nearest the middle of the screen is the active one
+    const mid = innerHeight / 2; let best = 0, bd = Infinity;
+    mkLis.forEach((li, k) => { const r = li.getBoundingClientRect(), d = Math.abs(r.top + r.height / 2 - mid); if (d < bd) { bd = d; best = k; } });
+    if (best !== mkI) { mkI = best; mkSet(best); }
+  }
+  addEventListener("scroll", mkScroll, { passive: true });
+
+  /* ---------------- compare: daylight vs lamp light ---------------- */
+  const cmpFrame = $("#cmpFrame"), cmpRange = $("#cmpRange");
+  $("#cmpA").src = $("#cmpB").src = U(P.silkClose, 1600);
+  function cmpSet(v) { v = Math.max(0, Math.min(100, v)); cmpFrame.style.setProperty("--pos", v + "%"); cmpRange.value = Math.round(v); }
+  const cmpFromX = (e) => { const r = cmpFrame.getBoundingClientRect(); cmpSet(((e.clientX - r.left) / r.width) * 100); };
+  let cmpDrag = false;
+  cmpFrame.addEventListener("pointerdown", (e) => { cmpDrag = true; cmpFrame.setPointerCapture(e.pointerId); cmpFrame.classList.add("is-drag"); cmpFromX(e); });
+  cmpFrame.addEventListener("pointermove", (e) => { if (cmpDrag) cmpFromX(e); });
+  const cmpEnd = () => { cmpDrag = false; cmpFrame.classList.remove("is-drag"); };
+  cmpFrame.addEventListener("pointerup", cmpEnd); cmpFrame.addEventListener("pointercancel", cmpEnd);
+  cmpRange.addEventListener("input", () => cmpSet(+cmpRange.value));
+  if (!reduce) { // one gentle sweep the first time it scrolls into view, to show it moves
+    const cmpObs = new IntersectionObserver((es) => { if (!es[0].isIntersecting) return; cmpObs.disconnect();
+      const t0 = performance.now(); (function sweep(t) { const k = Math.min(1, (t - t0) / 1600); if (cmpDrag) return;
+        cmpSet(50 + Math.sin(k * Math.PI * 2) * 18); if (k < 1) requestAnimationFrame(sweep); })(t0); }, { threshold: 0.6 });
+    cmpObs.observe(cmpFrame);
+  }
+
+  /* ---------------- heritage timeline ---------------- */
+  const HERI = [
+    { y: "1962", t: "One loom in Kanchipuram", src: "img/rail/kanchi-wine.webp", cut: true, d: "Our grandfather set up a single pit loom behind the family house and sold to two shops on the temple street." },
+    { y: "1978", t: "The first korvai border", src: "img/rail/kanchi-peacock.webp", cut: true, d: "We learned to interlock a contrast border by hand. Peacock blue with a magenta border became the saree people asked for by name." },
+    { y: "2004", t: "Silk Mark certified", src: U(P.hangers, 1100), d: "Every saree since carries the Silk Mark tag, so you know it is pure mulberry silk and the zari is real." },
+    { y: "2012", t: "The bridal studio", src: U(P.bride, 1100), d: "A quiet room upstairs for brides and their families, with time to drape, compare and decide without a crowd." },
+    { y: "2026", t: "Thari online", src: U(P.store, 1100), d: "The same sarees, the same muslin, now shipped across India with the weaver's card in every box." },
+  ];
+  const heriLine = $("#heriLine"), heriCard = $("#heriCard"), heriFill = $("#heriFill");
+  heriLine.insertAdjacentHTML("beforeend", HERI.map((h, i) => `<button class="heri__yr" role="tab" id="heri-${h.y}" aria-controls="heriCard" aria-selected="false" tabindex="-1" data-i="${i}"><b>${h.y}</b></button>`).join(""));
+  const heriBtns = $$(".heri__yr", heriLine);
+  let heriI = -1;
+  function heriPos() { const b = heriBtns[heriI], rl = heriFill.parentElement; rl.style.width = heriLine.scrollWidth + "px"; rl.style.setProperty("--fill", `${b.offsetLeft + b.offsetWidth / 2}px`); }
+  function heriSet(i, focus) {
+    if (i === heriI) return; heriI = i;
+    heriBtns.forEach((b, k) => { b.setAttribute("aria-selected", k === i); b.tabIndex = k === i ? 0 : -1; b.classList.toggle("is-past", k < i); });
+    if (focus) heriBtns[i].focus();
+    const b = heriBtns[i]; heriPos();
+    const h = HERI[i];
+    const fill = () => { heriCard.innerHTML = `<figure><img src="${h.src}" alt="" class="${h.cut ? "is-cut" : ""}"></figure>
+      <div class="heri__text"><span class="yr">${h.y}</span><h3>${h.t}</h3><p>${h.d}</p></div>`;
+      heriCard.setAttribute("aria-labelledby", b.id); setTimeout(() => heriCard.classList.remove("is-swap"), 30); };
+    if (heriCard.children.length && !reduce) { heriCard.classList.add("is-swap"); setTimeout(fill, 260); } else fill();
+  }
+  heriLine.addEventListener("click", (e) => { const b = e.target.closest(".heri__yr"); if (b) heriSet(+b.dataset.i); });
+  heriLine.addEventListener("keydown", (e) => {
+    const d = { ArrowRight: 1, ArrowLeft: -1 }[e.key]; if (d == null && e.key !== "Home" && e.key !== "End") return; e.preventDefault();
+    heriSet(e.key === "Home" ? 0 : e.key === "End" ? HERI.length - 1 : (heriI + d + HERI.length) % HERI.length, true);
+  });
+  heriSet(0);
+  addEventListener("resize", heriPos);
+
   /* ---------------- scroll effects ---------------- */
   const media = $("#drapeMedia");
   function onScroll() {
@@ -657,7 +876,7 @@
   addEventListener("scroll", onScroll, { passive: true }); onScroll();
 
   const rev = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { e.target.classList.add("is-in"); rev.unobserve(e.target); } }), { threshold: 0.15 });
-  $$(".section-head, .look__wrap, .pick__deck, .rail__head, .ward, .drape__grid, .reels, .bridal__arc, .weave__canvas, .footer__top").forEach((el) => { el.classList.add("reveal"); rev.observe(el); });
+  $$(".section-head, .look__wrap, .pick__deck, .rail__head, .ward, .drape__grid, .reels, .bridal__arc, .weave__canvas, .stl__wrap, .ctl__grid, .making__grid, .cmp__frame, .heri__line, .heri__card, .footer__top").forEach((el) => { el.classList.add("reveal"); rev.observe(el); });
 
   $("#newsForm").addEventListener("submit", (e) => { e.preventDefault(); e.target.reset(); toast("You're on the list. First letter arrives with the next weave."); });
 })();

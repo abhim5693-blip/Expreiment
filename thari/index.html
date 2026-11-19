@@ -7,7 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,300..800&family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500;1,600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=11">
+<link rel="stylesheet" href="styles.css?v=15">
 </head>
 <body class="is-locked">
 
@@ -156,6 +156,41 @@
   </div>
 </dialog>
 
+<!-- ============ SHOP THE LOOK ============ -->
+<section class="stl" id="shoplook">
+  <div class="section-head">
+    <div>
+      <p class="eyebrow">Shop the photo</p>
+      <h2 class="display">Shop the <em class="grad">look.</em></h2>
+    </div>
+    <p class="section-head__aside">Tap a dot on the photo to see that piece, or add the whole look at once.</p>
+  </div>
+  <div class="stl__wrap">
+    <div class="stl__stage" id="stlStage"></div>
+    <aside class="stl__panel" id="stlPanel" aria-live="polite"></aside>
+  </div>
+</section>
+
+<!-- ============ COMPLETE THE LOOK ============ -->
+<section class="ctl" id="complete">
+  <div class="ctl__grid">
+    <figure class="ctl__media">
+      <img id="ctlImg" alt="A woman in an ivory silk saree and red blouse against a teal wall" loading="lazy">
+      <figcaption>Styled in our Gandhi Road studio</figcaption>
+    </figure>
+    <div class="ctl__info">
+      <p class="eyebrow">Complete the look</p>
+      <h2 class="display">Ivory silk, <em class="grad">a red blouse.</em></h2>
+      <p class="muted ctl__lead">Pick the pieces you want. Change the saree colour and the price updates as you go.</p>
+      <ul class="ctl__list" id="ctlList"></ul>
+      <div class="ctl__total">
+        <span>Your look · <b id="ctlTotal">₹0</b></span>
+        <button class="pill pill--red" id="ctlAdd">Add to bag</button>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- ============ WOVEN IN LIGHT ============ -->
 <section class="light" id="light">
   <p class="light__text" id="lightText">Draped in devotion. Woven in light. Every thread passes through a weaver's hands four hundred times before it reaches yours.</p>
@@ -181,6 +216,42 @@
   </div>
 </section>
 
+<!-- ============ THE MAKING ============ -->
+<section class="making" id="making">
+  <div class="section-head">
+    <div>
+      <p class="eyebrow">From cocoon to cupboard</p>
+      <h2 class="display">How a Kanchi <em class="grad">is made.</em></h2>
+    </div>
+    <p class="section-head__aside">Four steps, about three weeks, two pairs of hands at the loom. Scroll through them.</p>
+  </div>
+  <div class="making__grid">
+    <div class="making__media" id="makingMedia">
+      <span class="making__count" id="makingCount">01 / 04</span>
+    </div>
+    <ol class="making__steps" id="makingSteps"></ol>
+  </div>
+</section>
+
+<!-- ============ ZARI IN TWO LIGHTS ============ -->
+<section class="cmp" id="compare">
+  <div class="section-head">
+    <div>
+      <p class="eyebrow">Zari in two lights</p>
+      <h2 class="display">Daylight. <em class="grad">Lamp light.</em></h2>
+    </div>
+    <p class="section-head__aside">Real zari is silver wound in gold, so it warms under a lamp. Drag the line to see the same silk both ways.</p>
+  </div>
+  <div class="cmp__frame" id="cmpFrame">
+    <img id="cmpA" alt="Magenta and lime silk with zari border in daylight" draggable="false">
+    <div class="cmp__after" id="cmpAfter"><img id="cmpB" alt="The same silk under warm lamp light" draggable="false"></div>
+    <span class="cmp__tag cmp__tag--l">Daylight</span>
+    <span class="cmp__tag cmp__tag--r">Lamp light</span>
+    <div class="cmp__handle" id="cmpHandle" aria-hidden="true"><span>‹ ›</span></div>
+    <input class="cmp__range" id="cmpRange" type="range" min="0" max="100" value="50" aria-label="Compare daylight and lamp light">
+  </div>
+</section>
+
 <!-- ============ SILK IN MOTION ============ -->
 <section class="motion" id="motion">
   <div class="section-head">
@@ -191,6 +262,21 @@
     <p class="section-head__aside">Short films from our weavers and the women who wear them. Tap one to watch.</p>
   </div>
   <div class="reels" id="reels"></div>
+</section>
+
+<!-- ============ HERITAGE ============ -->
+<section class="heri" id="heritage">
+  <div class="section-head">
+    <div>
+      <p class="eyebrow">Since 1962</p>
+      <h2 class="display">Three generations, <em class="grad">one loom.</em></h2>
+    </div>
+    <p class="section-head__aside">Pick a year, or use the arrow keys.</p>
+  </div>
+  <div class="heri__line" id="heriLine" role="tablist" aria-label="Thari timeline">
+    <div class="heri__rail"><i id="heriFill"></i></div>
+  </div>
+  <article class="heri__card" id="heriCard" aria-live="polite"></article>
 </section>
 
 <!-- ============ BRIDAL ============ -->
@@ -261,6 +347,6 @@
 
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
-<script src="app.js?v=11"></script>
+<script src="app.js?v=15"></script>
 </body>
 </html>
