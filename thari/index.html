@@ -1,0 +1,266 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Thari — Handwoven Silk</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,300..800&family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500;1,600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css?v=11">
+</head>
+<body class="is-locked">
+
+<!-- ============ CURTAIN INTRO ============ -->
+<div class="curtain" id="curtain" aria-hidden="true">
+  <div class="curtain__half curtain__half--l"></div>
+  <div class="curtain__half curtain__half--r"></div>
+  <div class="curtain__logo">
+    <svg viewBox="0 0 40 24" class="crown"><path d="M4 20 L8 6 L14 14 L20 3 L26 14 L32 6 L36 20 Z"/></svg>
+    <span class="wordmark">THARI</span>
+    <small>Handwoven silk · since 1962</small>
+  </div>
+  <button class="curtain__skip" id="curtainSkip">Enter</button>
+</div>
+
+<!-- ============ NAV ============ -->
+<header class="nav" id="nav">
+  <a href="#top" class="nav__brand" aria-label="Thari home">
+    <svg viewBox="0 0 40 24" class="crown"><path d="M4 20 L8 6 L14 14 L20 3 L26 14 L32 6 L36 20 Z"/></svg>
+    <span class="wordmark">THARI</span>
+  </a>
+  <nav class="nav__links" aria-label="Sections">
+    <a href="#top" data-spy="top">Home</a>
+    <a href="#look" data-spy="look">Try the Look</a>
+    <a href="#pick" data-spy="pick">Pick a Silk</a>
+    <a href="#rail" data-spy="rail">The Rail</a>
+    <a href="#drape" data-spy="drape">Drape</a>
+    <a href="#motion" data-spy="motion">Motion</a>
+    <a href="#bridal" data-spy="bridal">Bridal</a>
+    <a href="#weave" data-spy="weave">Weave</a>
+  </nav>
+  <div class="nav__tools">
+    <button class="nav__icon" aria-label="Search"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4 4"/></svg></button>
+    <button class="nav__icon nav__bag" id="bagBtn" aria-label="Bag, 0 items">
+      <svg viewBox="0 0 24 24"><path d="M5 8h14l-1.2 12H6.2z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg>
+      <span class="nav__count" id="bagCount">0</span>
+    </button>
+    <a href="#rail" class="pill pill--red">Shop now <span class="pill__dot">→</span></a>
+    <button class="nav__burger" id="burger" aria-label="Menu" aria-expanded="false"><span></span><span></span></button>
+  </div>
+</header>
+
+<main id="top">
+
+<!-- ============ HERO ============ -->
+<section class="hero" id="hero" aria-label="Welcome">
+  <div class="hero__slides" id="heroSlides"></div>
+  <div class="hero__shade"></div>
+  <div class="hero__copy">
+    <p class="eyebrow eyebrow--light" id="heroEyebrow">Kanchipuram · Est. 1962</p>
+    <h1 class="hero__title" id="heroTitle">Woven for the Divine.</h1>
+    <p class="hero__sub" id="heroSub">Pure mulberry silk, real zari, three generations of hands.</p>
+  </div>
+  <div class="hero__dots" id="heroDots"></div>
+  <a href="#look" class="hero__scroll">Scroll <span></span></a>
+</section>
+
+<!-- ============ RIBBON MARQUEE ============ -->
+<div class="ribbon" aria-hidden="true">
+  <div class="ribbon__track" id="ribbonTrack"></div>
+</div>
+
+<!-- ============ TRY THE LOOK ============ -->
+<section class="look" id="look">
+  <div class="section-head">
+    <div>
+      <p class="eyebrow">The festive edit</p>
+      <h2 class="display">Six Moods. <em class="grad">Timeless Drapes</em></h2>
+    </div>
+    <p class="section-head__aside">Every look below is one saree, one blouse and the pieces we'd pair with it. Nothing extra to guess.</p>
+  </div>
+
+  <div class="look__wrap" id="lookWrap">
+    <div class="look__intro">
+      <p class="eyebrow">Styled head to toe</p>
+      <h2 class="display">Try the <em class="grad">Look.</em></h2>
+      <p class="muted">Eight looks, styled head to toe. Tap a look to see the pieces.</p>
+      <button class="link-back" id="lookBack" hidden>← All looks</button>
+    </div>
+    <div class="look__stage" id="lookStage"></div>
+    <aside class="look__pieces" id="lookPieces" aria-live="polite"></aside>
+  </div>
+</section>
+
+<!-- ============ PICK A SILK ============ -->
+<section class="pick" id="pick">
+  <div class="section-head">
+    <div>
+      <p class="eyebrow">Eight weaves, eight regions</p>
+      <h2 class="display">Pick a <em class="grad">Silk</em></h2>
+    </div>
+    <div class="pick__ctrl">
+      <p class="section-head__aside">Drag, or use the arrows. Each card is a weave we source from the town it's named after.</p>
+      <div class="arrows">
+        <button class="arrow" id="pickPrev" aria-label="Previous silk">←</button>
+        <button class="arrow" id="pickNext" aria-label="Next silk">→</button>
+      </div>
+    </div>
+  </div>
+  <div class="pick__deck" id="pickDeck"></div>
+  <p class="pick__caption" id="pickCaption"></p>
+</section>
+
+<!-- ============ THE RAIL ============ -->
+<section class="rail" id="rail">
+  <div class="rail__head">
+    <p class="eyebrow">The Thari wardrobe</p>
+    <h2 class="display">Every silk, <em class="grad">on the rail.</em></h2>
+    <p class="muted rail__hint">Hover a piece to turn it toward you. Click to see it up close.</p>
+    <div class="chips" id="railChips" role="tablist" aria-label="Filter pieces"></div>
+  </div>
+
+  <div class="ward" id="ward">
+    <div class="ward__rod" aria-hidden="true"><i></i><i></i><i></i></div>
+    <div class="ward__track" id="wardTrack">
+      <div class="ward__rack" id="wardRack"></div>
+    </div>
+  </div>
+</section>
+
+<!-- Product sheet -->
+<dialog class="pd" id="pd" aria-labelledby="pdName">
+  <div class="pd__media">
+    <img id="pdImg" src="img/rail/kanchi-magenta.webp" alt="">
+    <span class="pd__badge" id="pdBadge"></span>
+  </div>
+  <div class="pd__info">
+    <button class="pd__close" id="pdClose" aria-label="Close">✕</button>
+    <p class="eyebrow" id="pdCat"></p>
+    <h3 class="pd__name" id="pdName"></h3>
+    <p class="pd__price" id="pdPrice"></p>
+    <p class="muted pd__desc" id="pdDesc"></p>
+    <div class="pd__group" id="pdColGroup">
+      <p class="pd__label">Colour <b id="pdColName"></b></p>
+      <div class="pd__swatches" id="pdSw" role="radiogroup" aria-label="Colour"></div>
+    </div>
+    <div class="pd__group" id="pdSizeGroup">
+      <p class="pd__label" id="pdSizeLabel">Size</p>
+      <div class="pd__sizes" id="pdSizes" role="radiogroup" aria-label="Size"></div>
+    </div>
+    <dl class="pd__facts" id="pdFacts"></dl>
+    <div class="pd__actions">
+      <button class="pill pill--red" id="pdAdd">Add to bag</button>
+      <button class="link-back" id="pdBack">← Back to the wardrobe</button>
+    </div>
+  </div>
+</dialog>
+
+<!-- ============ WOVEN IN LIGHT ============ -->
+<section class="light" id="light">
+  <p class="light__text" id="lightText">Draped in devotion. Woven in light. Every thread passes through a weaver's hands four hundred times before it reaches yours.</p>
+  <div class="light__strip"><div class="light__track" id="lightTrack"></div></div>
+</section>
+
+<!-- ============ FEEL THE DRAPE ============ -->
+<section class="drape" id="drape">
+  <div class="drape__grid" id="drapeGrid">
+    <div class="drape__col drape__col--l"></div>
+    <div class="drape__main">
+      <h2 class="display drape__title">Feel the <em class="grad">drape</em></h2>
+      <figure class="drape__media" id="drapeMedia">
+        <img id="drapeImg" src="https://images.unsplash.com/photo-1610189026205-27510cfc52f8?auto=format&fit=crop&w=1400&q=75" alt="Three women draped in purple and pink silk">
+        <figcaption>
+          <span class="drape__live"><i></i> Drape study</span>
+          <span id="drapeCap"></span>
+        </figcaption>
+      </figure>
+      <button class="pill pill--red drape__cta">Explore the drapes →</button>
+    </div>
+    <div class="drape__col drape__col--r"></div>
+  </div>
+</section>
+
+<!-- ============ SILK IN MOTION ============ -->
+<section class="motion" id="motion">
+  <div class="section-head">
+    <div>
+      <p class="eyebrow">From the loom, on film</p>
+      <h2 class="display">Silk, <em class="grad">in motion.</em></h2>
+    </div>
+    <p class="section-head__aside">Short films from our weavers and the women who wear them. Tap one to watch.</p>
+  </div>
+  <div class="reels" id="reels"></div>
+</section>
+
+<!-- ============ BRIDAL ============ -->
+<section class="bridal" id="bridal">
+  <p class="eyebrow center">For the first fold of a new life</p>
+  <h2 class="display center">The Bridal <em class="grad">Collection</em></h2>
+  <div class="bridal__arc" id="bridalArc"></div>
+  <div class="bridal__meta">
+    <p id="bridalName">Temple Red Kanchi</p>
+    <button class="pill pill--red">Book a bridal visit</button>
+  </div>
+</section>
+
+<!-- ============ WEAVE ============ -->
+<section class="weave" id="weave">
+  <div class="weave__top">
+    <p class="eyebrow">Build your own</p>
+    <button class="pill pill--red" id="weaveAdd">Add to cart</button>
+  </div>
+  <p class="weave__price-label">Your weave · <b id="weavePrice">₹37,350</b></p>
+  <h2 class="display center">Three silks, <em class="grad">one weave.</em></h2>
+  <canvas class="weave__canvas" id="weaveCanvas" aria-label="Three silk ribbons twisting together"></canvas>
+  <div class="weave__ctrl" id="weaveCtrl"></div>
+</section>
+
+</main>
+
+<!-- ============ FOOTER ============ -->
+<footer class="footer">
+  <div class="footer__top">
+    <h2 class="footer__line">Woven with heritage.<br>Draped for today.</h2>
+    <span class="footer__mark">Thari</span>
+  </div>
+  <div class="footer__cols">
+    <div><h4>Shop</h4><a href="#pick">Silk sarees</a><a href="#rail">Half sarees</a><a href="#rail">Blouses</a><a href="#bridal">Bridal</a></div>
+    <div><h4>Visit</h4><p>14 Gandhi Road<br>Kanchipuram 631501</p><p>Open daily, 10 – 9</p></div>
+    <div><h4>Help</h4><a href="#">Shipping</a><a href="#">Care guide</a><a href="#">Returns</a></div>
+    <form class="footer__news" id="newsForm">
+      <h4>Letters from the loom</h4>
+      <div><input type="email" required placeholder="Your email" aria-label="Email"><button class="pill pill--light">Join</button></div>
+    </form>
+  </div>
+  <p class="footer__legal">© 2026 Thari Silks. Demo site with stand-in photography from Unsplash.</p>
+</footer>
+
+<!-- Story viewer -->
+<div class="story" id="story" role="dialog" aria-modal="true" aria-label="Silk in motion story" hidden>
+  <div class="story__bg" id="storyBg"></div>
+  <div class="story__side story__side--l" id="storyPrevCard"></div>
+  <div class="story__card" id="storyCard">
+    <div class="story__bars" id="storyBars"></div>
+    <header class="story__head">
+      <span class="story__avatar">T</span>
+      <div><b>thari.silks</b><small id="storyTitle"></small></div>
+      <button class="story__btn" id="storyMute" aria-label="Mute">🔊</button>
+      <button class="story__btn" id="storyClose" aria-label="Close">✕</button>
+    </header>
+    <img id="storyImg" src="https://images.unsplash.com/photo-1610189026205-27510cfc52f8?auto=format&fit=crop&w=1400&q=75" alt="">
+    <button class="story__tap story__tap--l" id="storyTapL" aria-label="Previous"></button>
+    <button class="story__tap story__tap--r" id="storyTapR" aria-label="Next"></button>
+    <footer class="story__foot">
+      <p id="storyCaption"></p>
+      <button class="pill pill--light" id="storyShop">Shop this look</button>
+    </footer>
+  </div>
+  <div class="story__side story__side--r" id="storyNextCard"></div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script src="app.js?v=11"></script>
+</body>
+</html>
